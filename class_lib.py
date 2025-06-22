@@ -4,21 +4,22 @@ Created on 2025/6/23 3:12
 
 @author: Jia Yuxuan
 """
+import importlib
+
+
 class LibraryExplorer:
-    def __init__(self, pak_name):
-        self.num_of_dir: int
-        self.att_and_med: list[str]
+    def __init__(self, module_name):
+        self.module = importlib.import_module(module_name)
 
-    def list_all_items(self, pak_name):
-        return dir(pak_name)
+    def list_all_items(self):
+        return dir(self.module)
 
-    def count_items(self, pkg_name):
-        return len(dir(pkg_name))
+    def count_items(self):
+        return len(dir(self.module))
 
 
 if __name__ == '__main__':
-    import math
-    pak = math
-    LibraryExplorer = LibraryExplorer(pak)
-    print(LibraryExplorer.list_all_items(pak))
-    print(LibraryExplorer.count_items(pak))
+    pak_name = 'math'
+    Explorer = LibraryExplorer(pak_name)
+    print(Explorer.list_all_items())
+    print(Explorer.count_items())
