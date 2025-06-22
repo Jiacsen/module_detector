@@ -1,5 +1,6 @@
 # 忽略虚拟环境文件夹 .venv
 .venv/
 .idea/
+__pycache__/
 
 test.py
