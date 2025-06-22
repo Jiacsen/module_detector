@@ -5,7 +5,7 @@ Created on 2025/6/23 3:12
 @author: Jia Yuxuan
 """
 import importlib
-
+import inspect
 # TODO:第二个学习任务
 # 现在你已经掌握了基础，让我们增加功能。下一个任务：
 # 为LibraryExplorer类添加两个新方法：
@@ -33,6 +33,17 @@ class LibraryExplorer:
 
     def count_items(self):
         return len(dir(self.module))
+
+    def separate_by_type(self):
+        types_dict = {'functions': [], 'classes': [], 'variables': []}
+        for item_name in self.list_all_items():
+            if inspect.isclass(self.module.item_name): # 首先判断是否为类
+                types_dict['classes'].append(item_name)
+            elif callable(self.module.item_name): # 根据是否为可调用对象判断是否为函数，类也是可调用对象，但已经在上一步判断过了
+                types_dict['functions'].append(item_name)
+            else:
+                types_dict['variables'].append(item_name)
+        return types_dict
 
 
 if __name__ == '__main__':
