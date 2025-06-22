@@ -37,7 +37,7 @@ class LibraryExplorer:
                 types_dict['classes'].append(item_name)
             elif callable(obj):  # 根据是否为可调用对象判断是否为函数，类也是可调用对象，但已经在上一步判断过了
                 types_dict['functions'].append(item_name)
-            elif is_magic(item_name):
+            elif is_magic(item_name):  # TODO: 这里的判断还不够准确，需要进一步完善，暂时忽略
                 types_dict['special'].append(item_name)
             else:
                 types_dict['variables'].append(item_name)
