@@ -51,11 +51,24 @@ class LibraryExplorer:
             obj = getattr(self.module, item_name)
             info_dict = {
                 'name': item_name,
-                'type': type(obj).__name__,
+                'type': type(obj).__name__,  # __name__属性返回对象的类名
                 'value': obj,
-                'doc': obj.__doc__
+                'doc': obj.__doc__  # __doc__属性返回对象的文档字符串
             }
             return info_dict
+
+    def check_all_attribute(self):
+        attr__all__dict = {
+            'has_all': False,
+            'all_items': [],
+            'all_count': 0,
+        }
+        if hasattr(self.module, '__all__'):
+            attr__all__dict['has_all'] = True
+            attr__all__dict['all_items'] = self.module.__all__
+            attr__all__dict['all_count'] = len(self.module.__all__)
+        return attr__all__dict
+
 
 
 if __name__ == '__main__':
