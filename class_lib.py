@@ -58,6 +58,7 @@ class LibraryExplorer:
             return info_dict
 
     def check_all_attribute(self):
+        # 这种初始话+条件分支处理似乎属于"EAFP"（Easier to Ask for Forgiveness than Permission）
         attr__all__dict = {
             'has_all': False,
             'all_items': [],
