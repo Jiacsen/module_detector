@@ -80,10 +80,7 @@ class LibraryExplorer:
             'doc': obj.__doc__,  # __doc__属性返回对象的文档字符串
             'type': type(obj).__name__,  # __name__属性返回对象的类名字符串
             'types': type(obj)
-
         }
-
-
         return info_dict
 
 
