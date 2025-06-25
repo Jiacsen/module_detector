@@ -16,6 +16,16 @@ def is_magic(name):
     return True
 
 
+def safe_get(obj, attr_name: str) -> str|dict:
+    try:
+        return getattr(obj, attr_name)
+    except Exception as e:
+        return {
+            'error': type(e).__name__,  # 获取错误类型名称，例如 AttributeError
+            'message': str(e)  # 获取错误信息字符串
+        }
+
+
 class LibraryExplorer:
     def __init__(self, module_name):
         self.module = importlib.import_module(module_name)
@@ -75,13 +85,17 @@ class LibraryExplorer:
     def get_item_info_new(self, item_name: str) -> dict:
         obj = getattr(self.module, item_name)
         info_dict = {
-            'name': obj.__name__,
+            'name': safe_get(obj, '__name__'),
             'value': obj,
-            'doc': obj.__doc__,  # __doc__属性返回对象的文档字符串
+            'doc': safe_get(obj, '__doc__'),  # __doc__属性返回对象的文档字符串
             'type': type(obj).__name__,  # __name__属性返回对象的类名字符串
             'types': type(obj)
+
         }
         return info_dict
+
+
+
 
 
 if __name__ == '__main__':
