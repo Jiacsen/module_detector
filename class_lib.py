@@ -7,12 +7,14 @@ Created on 2025/6/23 3:12
 import importlib
 import inspect
 
+
 def is_magic(name):
     if len(name) < 4:
         return False
     if name[:2] != '__' or name[-2:] != '__':
         return False
     return True
+
 
 class LibraryExplorer:
     def __init__(self, module_name):
@@ -51,7 +53,7 @@ class LibraryExplorer:
             obj = getattr(self.module, item_name)
             info_dict = {
                 'name': item_name,
-                'type': type(obj).__name__,  # __name__属性返回对象的类名
+                'type': type(obj).__name__,  # __name__属性返回对象的类名字符串
                 'value': obj,
                 'doc': obj.__doc__  # __doc__属性返回对象的文档字符串
             }
@@ -70,6 +72,19 @@ class LibraryExplorer:
             attr__all__dict['all_count'] = len(self.module.__all__)
         return attr__all__dict
 
+    def get_item_info_new(self, item_name: str) -> dict:
+        obj = getattr(self.module, item_name)
+        info_dict = {
+            'name': obj.__name__,
+            'value': obj,
+            'doc': obj.__doc__,  # __doc__属性返回对象的文档字符串
+            'type': type(obj).__name__,  # __name__属性返回对象的类名字符串
+            'types': type(obj)
+
+        }
+
+
+        return info_dict
 
 
 if __name__ == '__main__':
