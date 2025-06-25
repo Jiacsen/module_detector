@@ -8,10 +8,10 @@ import importlib
 import inspect
 
 
-def is_magic(name):
-    if len(name) < 4:
+def is_magic(attr_name: str)->bool:
+    if len(attr_name) < 4:
         return False
-    if name[:2] != '__' or name[-2:] != '__':
+    if attr_name[:2] != '__' or attr_name[-2:] != '__':
         return False
     return True
 
@@ -30,13 +30,13 @@ class LibraryExplorer:
     def __init__(self, module_name):
         self.module = importlib.import_module(module_name)
 
-    def list_all_items(self):
+    def list_all_items(self) -> list:
         return dir(self.module)
 
-    def count_items(self):
+    def count_items(self) -> int:
         return len(dir(self.module))
 
-    def separate_by_type(self):
+    def separate_by_type(self) -> dict:
         types_dict = {
             'functions': [],
             'classes': [],
@@ -55,19 +55,25 @@ class LibraryExplorer:
                 types_dict['variables'].append(item_name)
         return types_dict
 
-    def get_item_info(self, item_name):
-        if not item_name in self.list_all_items():
-            print('Item not found.')
-            return None
-        else:
-            obj = getattr(self.module, item_name)
-            info_dict = {
-                'name': item_name,
-                'type': type(obj).__name__,  # __name__属性返回对象的类名字符串
-                'value': obj,
-                'doc': obj.__doc__  # __doc__属性返回对象的文档字符串
-            }
-            return info_dict
+    def get_item_info(self, item_name: str) -> dict:
+        obj = getattr(self.module, item_name)
+        info_dict = {
+            'name': item_name,
+            'value': obj,
+            'type': type(obj).__name__,  # __name__属性返回对象的类名字符串
+            '__name__': safe_get(obj, '__name__'),
+            '__doc__': safe_get(obj, '__doc__'),  # __doc__属性返回对象的文档字符串
+            '__module__': safe_get(obj, '__module__'),
+            '__package__': safe_get(obj, '__package__'),
+
+        }
+        return info_dict
+
+    def get_summary_info(self) -> dict:
+        summary_dict = {}
+        for item_name in self.list_all_items():
+            summary_dict[item_name] = self.get_item_info(item_name)
+        return summary_dict
 
     def check_all_attribute(self):
         # 这种初始话+条件分支处理似乎属于"EAFP"（Easier to Ask for Forgiveness than Permission）
@@ -82,24 +88,8 @@ class LibraryExplorer:
             attr__all__dict['all_count'] = len(self.module.__all__)
         return attr__all__dict
 
-    def get_item_info_new(self, item_name: str) -> dict:
-        obj = getattr(self.module, item_name)
-        info_dict = {
-            'name': safe_get(obj, '__name__'),
-            'value': obj,
-            'doc': safe_get(obj, '__doc__'),  # __doc__属性返回对象的文档字符串
-            'type': type(obj).__name__,  # __name__属性返回对象的类名字符串
-            'types': type(obj)
-
-        }
-        return info_dict
-
-
-
-
 
 if __name__ == '__main__':
     pak_name = 'math'
     Explorer = LibraryExplorer(pak_name)
-    print(Explorer.separate_by_type())
-    print(Explorer.get_item_info('pi'))
+
