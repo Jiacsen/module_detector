@@ -16,14 +16,17 @@ def is_magic(attr_name: str)->bool:
     return True
 
 
-def safe_get(obj, attr_name: str) -> str|dict:
+def safe_get(obj, attr_name: str, is_store_error=False) -> str|dict|None:
     try:
         return getattr(obj, attr_name)
     except Exception as e:
-        return {
-            'error': type(e).__name__,  # 获取错误类型名称，例如 AttributeError
-            'message': str(e)  # 获取错误信息字符串
-        }
+        if is_store_error:
+            return {
+                'error': type(e).__name__,  # 获取错误类型名称，例如 AttributeError
+                'message': str(e)  # 获取错误信息字符串
+            }
+        else:
+            return None
 
 
 class LibraryExplorer:
@@ -38,19 +41,28 @@ class LibraryExplorer:
 
     def separate_by_type(self) -> dict:
         types_dict = {
-            'functions': [],
             'classes': [],
-            'special': [],
-            'variables': []
+            'functions': [],
+            'methods': [],
+            'modules': [],
+            'builtins': [],
+            'magics': [],
+            'variables': [],
         }
         for item_name in self.list_all_items():
             obj = getattr(self.module, item_name)
-            if inspect.isclass(obj):  # 首先判断是否为类
+            if inspect.isclass(obj):
                 types_dict['classes'].append(item_name)
-            elif callable(obj):  # 根据是否为可调用对象判断是否为函数，类也是可调用对象，但已经在上一步判断过了
+            elif inspect.isfunction(obj):
                 types_dict['functions'].append(item_name)
             elif is_magic(item_name):  # TODO: 这里的判断还不够准确，需要进一步完善，暂时忽略
-                types_dict['special'].append(item_name)
+                types_dict['magics'].append(item_name)
+            elif inspect.ismethod(obj):
+                types_dict['methods'].append(item_name)
+            elif inspect.ismodule(obj):
+                types_dict['modules'].append(item_name)
+            elif inspect.isbuiltin(obj):
+                types_dict['builtins'].append(item_name)
             else:
                 types_dict['variables'].append(item_name)
         return types_dict
@@ -58,6 +70,7 @@ class LibraryExplorer:
     def get_item_info(self, item_name: str) -> dict:
         obj = getattr(self.module, item_name)
         info_dict = {
+            # 属性
             'name': item_name,
             'value': obj,
             'type': type(obj).__name__,  # __name__属性返回对象的类名字符串
@@ -65,6 +78,13 @@ class LibraryExplorer:
             '__doc__': safe_get(obj, '__doc__'),  # __doc__属性返回对象的文档字符串
             '__module__': safe_get(obj, '__module__'),
             '__package__': safe_get(obj, '__package__'),
+            # 类型判断
+            'is_class': inspect.isclass(obj),
+            'is_function': inspect.isfunction(obj),
+            'is_method': inspect.ismethod(obj),
+            'is_module': inspect.ismodule(obj),
+            'is_builtin': inspect.isbuiltin(obj),
+            'is_magic': is_magic(item_name),
 
         }
         return info_dict
